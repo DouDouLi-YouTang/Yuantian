@@ -1,0 +1,45 @@
+/*字体文件*/
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+
+@font-face {
+  font-family: "MiSans";
+  src: url(../assets/font/MiSans-Regular.ttf);
+}
+
+@font-face {
+  font-family: "iconfont";
+  /* Project id 4116217 */
+  src: url('../assets/font/iconfont.woff2') format('woff2'),
+  url('../assets/font/iconfont.woff') format('woff'),
+  url('../assets/font/iconfont.ttf') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont", !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-drag_2:before {
+  content: "\e616";
+}
+
+.icon-github:before {
+  content: "\e709";
+}
+
+.icon-weixin:before {
+  content: "\e607";
+}
+
+.icon-QQ:before {
+  content: "\e667";
+}

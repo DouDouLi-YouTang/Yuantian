@@ -4,7 +4,7 @@
       <div class="Text">
         <h1>元天导航</h1>
         <div class="Scrolling">{{ title }}<b :style="`padding:0 2px; opacity:${show === true? '1':'0'}`">|</b></div>
-        <button>进入</button>
+        <button @click="goIn">进入</button>
         <div class="footer">
           <span class="QQ">
             <svg class="icon" aria-hidden="true">
@@ -30,6 +30,8 @@
 </template>
 <script setup>
 import {ref, onUnmounted} from 'vue'
+import {useRouter} from 'vue-router';
+import {throttle} from "@/Untils/Global";
 
 const textList = [
   '你总觉得别人不达标，是因为心里曾有个得过满分的',
@@ -85,6 +87,12 @@ onUnmounted(() => {
   clearInterval(time)
   clearInterval(time2)
 });
+
+const router = useRouter()
+const goIn = throttle(function () {
+  router.push('/home')
+})
+
 </script>
 
 

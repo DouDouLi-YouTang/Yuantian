@@ -1,0 +1,215 @@
+<template>
+  <div class="sidebar">
+    <Simplebar class="simplebar">
+      <div :class="`box ${activeId === 'Nav'+ item.id ? 'active':''}`" v-for="item in props.list" :key="item.id"
+           @click="setActive('Nav'+ item.id)">
+        {{ item.title }}
+        <div class="Edit" v-if="props.Edit">
+          <a-dropdown>
+            <a class="ant-dropdown-link" @click.prevent>
+              <EllipsisOutlined class="EditIcon"/>
+            </a>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item @click="openModal(item)">
+                  <span>编辑</span>
+                </a-menu-item>
+                <a-menu-item @click="remove(item)">
+                  <span>删除</span>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </div>
+      </div>
+      <transition name="bounce">
+        <div class="box add" v-if="props.Edit">
+          <PlusOutlined/>
+        </div>
+      </transition>
+    </Simplebar>
+    <MenuEdit ref="menuEdit" @resetData="resetData"/>
+  </div>
+</template>
+<script setup>
+import {EllipsisOutlined, ExclamationCircleOutlined, PlusOutlined} from '@ant-design/icons-vue';
+import 'simplebar-vue/dist/simplebar.min.css';
+import Simplebar from "simplebar-vue";
+import MenuEdit from "@/views/Collection/Alert/MenuEdit.vue";
+import {defineProps, ref, watch, defineEmits, createVNode} from "vue"
+import {message, Modal} from 'ant-design-vue';
+import {deleteInBulk} from '@/Untils/indexedDB.js'
+
+const props = defineProps({
+  list: {
+    type: Array,
+    default: () => []
+  },
+  Edit: {
+    type: Boolean,
+    default: false
+  },
+  activeId: {
+    type: String,
+    default: 'Nav1'
+  }
+})
+watch(() => props.activeId, () => {
+  activeId.value = props.activeId
+})
+const activeId = ref('Nav1')
+
+const emits = defineEmits(['setActive', 'resetData'])
+
+function setActive(Id) {
+  activeId.value = Id
+  emits('setActive', Id)
+}
+
+const menuEdit = ref(null)
+const openModal = function (parent) {
+  menuEdit.value.edit(parent)
+}
+const resetData = function () {
+  emits('resetData')
+}
+const remove = function (data) {
+  const numberOfLists = props.list.length
+  const currentSubscript = props.list.findIndex(item => item.id === data.id) + 1
+  let ids = [data.id,]
+  data.children.forEach(item => ids.push(item.id))
+  if (numberOfLists !== 1) {
+    Modal.confirm({
+      title: '警告！',
+      icon: createVNode(ExclamationCircleOutlined),
+      content: createVNode('span', null, [
+        '你确定要 ',
+        createVNode('span', {style: "color:#FF4D4F;"}, '删除 '),
+        `#${data.title} 吗？该分类下有 `,
+        createVNode('b', {style: "color:#1677FF;"}, data.children.length),
+        ' 个子分类，删除后将无法恢复！',
+      ],),
+      okText: '删除',
+      okType: 'danger',
+      cancelText: '取消',
+      onOk() {
+        deleteInBulk(ids).then(() => {
+          message.success('删除成功')
+          resetData()
+          activeId.value = 'Nav' + props.list.at(currentSubscript).id
+        }).catch(() => {
+          message.error('未知错误，删除失败！')
+        })
+      },
+      onCancel() {
+
+      },
+    });
+  } else {
+    message.warning('至少保留一个分类！')
+  }
+}
+
+</script>
+
+<style scoped lang="scss">
+$MainHeight: calc(100vh - 140px);
+.simplebar {
+  max-height: calc(100vh - 160px);
+}
+
+.sidebar {
+  margin: 40px 0;
+  background-color: white;
+  padding: 10px 10px 10px 20px;
+  width: 100%;
+  height: 100%;
+  max-height: $MainHeight;
+  border-radius: 10px;
+
+  .box {
+    font-size: 14px;
+    height: 40px;
+    line-height: 40px;
+    cursor: pointer;
+    transition: all 0.5s;
+    border-radius: 5px;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 5px 0;
+
+    &:hover {
+      padding-left: 20px;
+      color: #409eff;
+      background-color: #ecf5ff;
+
+      .Edit {
+        display: block;
+      }
+    }
+
+    .Edit {
+      position: absolute;
+      right: 10px;
+      z-index: 10;
+      bottom: -10px;
+      display: none;
+
+      .EditIcon {
+        transition: all 0.5s;
+        color: rgb(96, 98, 102);
+        font-size: 20px;
+      }
+
+      &:hover {
+        .EditIcon {
+          transform: scale(1.2);
+          color: #409eff;
+        }
+      }
+    }
+  }
+
+  .active {
+    padding-left: 20px;
+    color: #409eff;
+    background-color: #ecf5ff;
+  }
+
+  .add {
+    text-align: center;
+    font-size: 20px;
+    border: 1.5px dashed #ecf5ff;
+
+    &:hover {
+      padding-left: 0;
+    }
+  }
+}
+
+// 组件过渡动画
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1.25);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+</style>

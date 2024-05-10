@@ -6,6 +6,10 @@
   font-family: MiSans, Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
 }
 
+html {
+  background-color: #f5f5f5;
+}
+
 a {
   text-decoration: none;
 }
@@ -30,3 +34,10 @@ p {
   padding: 0;
 }
 
+.main {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 20px;
+  //box-sizing: border-box;
+  font-family: MiSans, Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
+}

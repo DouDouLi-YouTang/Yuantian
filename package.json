@@ -9,9 +9,12 @@
   "dependencies": {
     "ant-design-vue": "^4.1.2",
     "core-js": "^3.8.3",
+    "dexie": "^4.0.4",
+    "simplebar-vue": "^2.3.3",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.0"
+    "vuex": "^4.0.0",
+    "xe-utils": "^3.5.25"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",

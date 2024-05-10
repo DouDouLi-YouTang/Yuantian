@@ -5,6 +5,7 @@ import Antd from 'ant-design-vue';
 import router from './router'
 import store from './store'
 import 'ant-design-vue/dist/reset.css';
+import './Untils/Global.js'
 
 import '../src/Untils/iconfont'
 import '../src/style/Font.scss'

@@ -1,0 +1,48 @@
+$themes: (
+  light:(
+    bgColor:#fff,
+    background:rgba(245, 245, 245),
+    textColor:#000,
+    borderColor: rgb(220, 223, 230),
+    transition:.5s,
+    boxBackgroundColor:white,
+    titleColor: rgb(48, 49, 51),
+    SidebarHoverColor:rgba(236, 245, 255, 1),
+    SidebarActiveColor:rgb(64, 158, 255),
+  ),
+  dark:(
+    bgColor:#262727,
+    background:rgba(38, 39, 39),
+    textColor:#E5EAF3,
+    borderColor:rgb(76, 77, 79),
+    transition:.5s,
+    boxBackgroundColor:#212121,
+    titleColor: rgb(229, 234, 243),
+    SidebarHoverColor:rgba(64, 158, 255, 0.1),
+    SidebarActiveColor:rgb(64, 158, 255),
+  )
+);
+
+$currentTheme: light;
+@mixin useTheme() {
+  @each $key, $value in $themes {
+    $currentTheme: $key !global;
+    html[data-theme=#{$key}] & {
+      @content
+    }
+  }
+}
+
+@function getVar($key) {
+  $themeMap: map-get($themes, $currentTheme);
+  @return map-get($themeMap, $key);
+}
+
+.abc {
+  width: 100%;
+  height: 100%;
+  @include useTheme {
+    background-color: getVar('bgColor');
+    color: getVar('textColor');
+  }
+}

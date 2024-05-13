@@ -27,8 +27,8 @@
   </div>
 </template>
 <script setup>
-import {ref, defineEmits, reactive, defineExpose} from "vue"
-import {setTableData} from '@/Untils/indexedDB.js'
+import {ref, reactive,} from "vue"
+import {setTableData, addTableData} from '@/Untils/indexedDB.js'
 
 import XEUtils from 'xe-utils'
 import {message} from "ant-design-vue";
@@ -37,21 +37,37 @@ const open = ref(false)
 const data = reactive({})
 const emits = defineEmits(['resetData'])
 
-const edit = function (parent) {
+const edit = function (parent, type) {
   open.value = true
-  data.value = XEUtils.clone(parent)
+  if (type === 'add') {
+    data.value = {
+      title: '',
+    }
+  } else {
+    data.value = XEUtils.clone(parent)
+  }
 }
 const formRef = ref()
 
 const handleOk = function () {
+
   formRef.value.validate().then(() => {
     let id = data.value.id
-    delete data.value.children
-    setTableData(id, data.value).then(() => {
-      message.success('修改成功！')
-      emits('resetData')
-      open.value = false
-    })
+    if (!id && id !== 0) {
+      let SaveData = XEUtils.clone(data.value)
+      addTableData(SaveData).then(() => {
+        message.success('添加成功！')
+        emits('resetData')
+        open.value = false
+      })
+    } else {
+      delete data.value.children
+      setTableData(id, data.value).then(() => {
+        message.success('修改成功！')
+        emits('resetData')
+        open.value = false
+      })
+    }
   }).catch((e) => {
     message.error(e.errorFields?.at(0).errors.at(0) || '未知错误！')
   })

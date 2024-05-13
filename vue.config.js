@@ -10,4 +10,12 @@ module.exports = {
       return definitions
     })
   },
+  css: {
+    loaderOptions: {
+      scss: {
+        // 全局引入主题文件
+        additionalData: '@import "@/style/theme.scss";'
+      }
+    }
+  }
 }

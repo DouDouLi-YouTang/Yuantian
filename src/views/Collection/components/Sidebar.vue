@@ -11,7 +11,7 @@
             </a>
             <template #overlay>
               <a-menu>
-                <a-menu-item @click="openModal(item)">
+                <a-menu-item @click="openModal(item,'edit')">
                   <span>编辑</span>
                 </a-menu-item>
                 <a-menu-item @click="remove(item)">
@@ -23,7 +23,7 @@
         </div>
       </div>
       <transition name="bounce">
-        <div class="box add" v-if="props.Edit">
+        <div class="box add" v-if="props.Edit" @click="openModal({},'add')">
           <PlusOutlined/>
         </div>
       </transition>
@@ -36,7 +36,7 @@ import {EllipsisOutlined, ExclamationCircleOutlined, PlusOutlined} from '@ant-de
 import 'simplebar-vue/dist/simplebar.min.css';
 import Simplebar from "simplebar-vue";
 import MenuEdit from "@/views/Collection/Alert/MenuEdit.vue";
-import {defineProps, ref, watch, defineEmits, createVNode} from "vue"
+import {ref, watch, createVNode} from "vue"
 import {message, Modal} from 'ant-design-vue';
 import {deleteInBulk} from '@/Untils/indexedDB.js'
 
@@ -67,8 +67,8 @@ function setActive(Id) {
 }
 
 const menuEdit = ref(null)
-const openModal = function (parent) {
-  menuEdit.value.edit(parent)
+const openModal = function (parent, type) {
+  menuEdit.value.edit(parent, type)
 }
 const resetData = function () {
   emits('resetData')
@@ -120,7 +120,11 @@ $MainHeight: calc(100vh - 140px);
 
 .sidebar {
   margin: 40px 0;
-  background-color: white;
+  @include useTheme {
+    background-color: getVar('boxBackgroundColor');
+    transition: all getVar('transition');
+    color: getVar('textColor');
+  }
   padding: 10px 10px 10px 20px;
   width: 100%;
   height: 100%;
@@ -143,8 +147,12 @@ $MainHeight: calc(100vh - 140px);
 
     &:hover {
       padding-left: 20px;
-      color: #409eff;
-      background-color: #ecf5ff;
+      @include useTheme {
+        background-color: getVar('SidebarHoverColor');
+        color: getVar('SidebarActiveColor');
+      }
+      //color: #409eff;
+      //background-color: #ecf5ff;
 
       .Edit {
         display: block;
@@ -176,7 +184,10 @@ $MainHeight: calc(100vh - 140px);
   .active {
     padding-left: 20px;
     color: #409eff;
-    background-color: #ecf5ff;
+    @include useTheme {
+      background-color: getVar('SidebarHoverColor');
+      color: getVar('SidebarActiveColor');
+    }
   }
 
   .add {

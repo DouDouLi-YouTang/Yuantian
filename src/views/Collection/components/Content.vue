@@ -58,7 +58,7 @@
   </div>
 </template>
 <script setup>
-import {defineProps, ref, watch, onMounted, defineEmits, createVNode} from "vue"
+import {ref, watch, onMounted, createVNode} from "vue"
 import {setTableData, removeTableData} from '@/Untils/indexedDB.js'
 import simplebar from "simplebar-vue";
 import {message, Modal} from 'ant-design-vue';
@@ -188,6 +188,7 @@ $MainHeight: calc(100vh - 60px);
   width: 100%;
   padding-right: 15px;
   padding-bottom: 40px;
+
 }
 
 .content {
@@ -208,11 +209,13 @@ $MainHeight: calc(100vh - 60px);
     .title {
       font-size: 20px;
       transition: all .3s;
-      color: #606266;
       user-select: none;
       position: relative;
       width: fit-content;
       margin-bottom: 10px;
+      @include useTheme {
+        color: getVar('titleColor');
+      }
 
       &::after {
         content: "";
@@ -226,7 +229,7 @@ $MainHeight: calc(100vh - 60px);
       }
 
       &:hover {
-        color: #0072ea;
+        color: rgb(0, 114, 234) !important;
 
         &::after {
           width: calc(100% + 10px);
@@ -245,6 +248,12 @@ $MainHeight: calc(100vh - 60px);
       transition: all .5s;
       position: relative;
 
+      @include useTheme {
+        background-color: getVar('boxBackgroundColor');
+        transition: all getVar('transition');
+        color: getVar('textColor');
+      }
+
       &:hover {
         box-shadow: 0 15px 30px rgba(0, 0, 0, .1);
         transform: translate3d(0, -2px, 0);
@@ -260,11 +269,12 @@ $MainHeight: calc(100vh - 60px);
         bottom: 0;
         display: none;
 
-
         .EditIcon {
           transition: all 0.5s;
           font-size: 20px;
-          color: black;
+          @include useTheme {
+            color: getVar('textColor');
+          }
 
           &:hover {
             transform: scale(1.2);

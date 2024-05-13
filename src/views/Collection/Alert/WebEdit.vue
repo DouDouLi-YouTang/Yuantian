@@ -70,7 +70,7 @@
 </template>
 <script setup>
 import emptyImg from '@/assets/imgs/empty.svg'
-import {defineEmits, defineExpose, reactive, ref, watch} from "vue"
+import {reactive, ref, watch} from "vue"
 import {addTableData, setTableData} from '@/Untils/indexedDB.js'
 import {message} from 'ant-design-vue';
 import XEUtils from 'xe-utils'

@@ -53,6 +53,12 @@ function setActive(id) {
 </script>
 
 <style scoped lang="scss">
+.collection {
+  @include useTheme {
+    background-color: getVar('background');
+  }
+}
+
 .a-col {
   transition: all .5s;
 }
@@ -62,9 +68,34 @@ function setActive(id) {
   bottom: 100px;
   width: 50px;
   height: 50px;
+  @include useTheme {
+    background-color: getVar('bgColor');
+  }
+
+  &:hover {
+    @include useTheme {
+      background-color: getVar('textColor');
+    }
+  }
 
   .btnIcon {
     font-size: 22px;
+    @include useTheme {
+      transition: all getVar('transition');
+      color: getVar('textColor');
+    }
+  }
+}
+</style>
+<style lang="scss">
+.ant-float-btn-body {
+  @include useTheme {
+    background-color: getVar('bgColor');
+    transition: all getVar('transition');
+  }
+
+  &:hover .btnIcon {
+    color: getVar('bgColor') !important;
   }
 }
 </style>

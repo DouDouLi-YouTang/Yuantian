@@ -214,7 +214,7 @@ $MainHeight: calc(100vh - 60px);
       width: fit-content;
       margin-bottom: 10px;
       @include useTheme {
-        color: getVar('titleColor');
+        color: getVar('titleColor', ('Content'));
       }
 
       &::after {
@@ -249,7 +249,7 @@ $MainHeight: calc(100vh - 60px);
       position: relative;
 
       @include useTheme {
-        background-color: getVar('boxBackgroundColor');
+        background-color: getVar('BaseBackground');
         transition: all getVar('transition');
         color: getVar('textColor');
       }
@@ -260,6 +260,8 @@ $MainHeight: calc(100vh - 60px);
 
         .Edit {
           display: block;
+
+
         }
       }
 
@@ -359,4 +361,8 @@ $MainHeight: calc(100vh - 60px);
     width: 50%;
   }
 }
+</style>
+
+<style lang="scss">
+
 </style>

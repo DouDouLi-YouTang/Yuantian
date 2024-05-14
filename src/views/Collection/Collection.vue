@@ -55,7 +55,7 @@ function setActive(id) {
 <style scoped lang="scss">
 .collection {
   @include useTheme {
-    background-color: getVar('background');
+    background-color: getVar('PageBackground');
   }
 }
 
@@ -69,20 +69,14 @@ function setActive(id) {
   width: 50px;
   height: 50px;
   @include useTheme {
-    background-color: getVar('bgColor');
-  }
-
-  &:hover {
-    @include useTheme {
-      background-color: getVar('textColor');
-    }
+    background-color: getVar('bgColor', ('btn'));
   }
 
   .btnIcon {
     font-size: 22px;
     @include useTheme {
       transition: all getVar('transition');
-      color: getVar('textColor');
+      color: getVar('color', ('btn'));
     }
   }
 }
@@ -90,12 +84,20 @@ function setActive(id) {
 <style lang="scss">
 .ant-float-btn-body {
   @include useTheme {
-    background-color: getVar('bgColor');
     transition: all getVar('transition');
+    background-color: getVar('bgColor', ('btn'));
+  }
+
+  &:hover {
+    @include useTheme {
+      background-color: getVar('hoverColor', ('btn'));
+    }
   }
 
   &:hover .btnIcon {
-    color: getVar('bgColor') !important;
+    @include useTheme {
+      color: getVar('hover', ('btn'));
+    }
   }
 }
 </style>

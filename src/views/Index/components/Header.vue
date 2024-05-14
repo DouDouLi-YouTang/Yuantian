@@ -53,7 +53,7 @@ const themeSwitching = (item) => {
   border-bottom: 1px solid;
   position: relative;
   @include useTheme {
-    background-color: getVar('bgColor');
+    background-color: getVar('PageBackground');
     border-color: getVar('borderColor');
     transition: all getVar('transition');
     color: getVar('textColor');

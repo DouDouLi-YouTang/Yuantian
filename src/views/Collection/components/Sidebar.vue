@@ -116,12 +116,14 @@ const remove = function (data) {
 $MainHeight: calc(100vh - 140px);
 .simplebar {
   max-height: calc(100vh - 160px);
+
+
 }
 
 .sidebar {
   margin: 40px 0;
   @include useTheme {
-    background-color: getVar('boxBackgroundColor');
+    background-color: getVar('BaseBackground');
     transition: all getVar('transition');
     color: getVar('textColor');
   }
@@ -223,4 +225,8 @@ $MainHeight: calc(100vh - 140px);
     transform: scale(1);
   }
 }
+</style>
+
+<style lang="scss">
+
 </style>

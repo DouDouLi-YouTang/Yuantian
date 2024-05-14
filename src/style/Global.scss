@@ -41,3 +41,19 @@ p {
   //box-sizing: border-box;
   font-family: MiSans, Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
 }
+
+/* region simplebar滚动条样式 */
+.simplebar-hover::before {
+  @include useTheme {
+    background-color: getVar('hover', ('scrollbarColor')) !important;
+  }
+}
+
+.simplebar-scrollbar::before {
+  cursor: pointer;
+  @include useTheme {
+    background-color: getVar('color', ('scrollbarColor'));
+  }
+}
+
+/* endregion */

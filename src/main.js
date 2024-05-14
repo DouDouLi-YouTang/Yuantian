@@ -10,7 +10,6 @@ import './Untils/Global.js'
 import '../src/Untils/iconfont'
 import '../src/style/Font.scss'
 import '../src/style/Global.scss'
-// import '../src/style/theme.scss'
 
 
 const app = createApp(App)

@@ -19,6 +19,7 @@
         <FormOutlined class="btnIcon"/>
       </template>
     </a-float-button>
+    <SlideTheSidebar @reset="getData"/>
   </div>
 
 </template>
@@ -28,14 +29,33 @@ import {ref} from "vue";
 import {FormOutlined} from '@ant-design/icons-vue';
 import Sidebar from "@/views/Collection/components/Sidebar.vue";
 import Content from "@/views/Collection/components/Content.vue";
+import SlideTheSidebar from "@/components/SlideTheSidebar.vue";
+import {clone} from "xe-utils";
 
 const data = ref([])
+const sortDataSync = function (value) {
+  const allData = clone(value);
+
+  function sortChildren(item) {
+    if (item.children) {
+      item.children.sort((a, b) => a.sort - b.sort);
+      item.children.forEach(child => sortChildren(child));
+    }
+  }
+
+  allData.sort((a, b) => a.sort - b.sort);
+  for (let i = 0; i < allData.length; i++) {
+    sortChildren(allData[i]);
+  }
+  return allData;
+}
 const getData = function () {
   getUserTableData().then(res => {
-    data.value = res
+    data.value = sortDataSync(res)
   })
 }
 getData()
+
 const activeId = ref(null)
 const Edit = ref(false)
 

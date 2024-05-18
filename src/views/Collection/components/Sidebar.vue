@@ -1,32 +1,41 @@
 <template>
-  <div class="sidebar">
+  <div class="sidebar" v-show="navs.length">
     <Simplebar class="simplebar">
-      <div :class="`box ${activeId === 'Nav'+ item.id ? 'active':''}`" v-for="item in props.list" :key="item.id"
-           @click="setActive('Nav'+ item.id)">
-        {{ item.title }}
-        <div class="Edit" v-if="props.Edit">
-          <a-dropdown>
-            <a class="ant-dropdown-link" @click.prevent>
-              <EllipsisOutlined class="EditIcon"/>
-            </a>
-            <template #overlay>
-              <a-menu>
-                <a-menu-item @click="openModal(item,'edit')">
-                  <span>编辑</span>
-                </a-menu-item>
-                <a-menu-item @click="remove(item)">
-                  <span>删除</span>
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
-        </div>
-      </div>
-      <transition name="bounce">
-        <div class="box add" v-if="props.Edit" @click="openModal({},'add')">
-          <PlusOutlined/>
-        </div>
-      </transition>
+      <VueDraggable ref="el" v-model="navs" @end="onEnd" :animation="150" :filter="'.add'" :disabled="!props.Edit"
+                    ghostClass="ghost">
+        <TransitionGroup type="transition" name="fade">
+          <div
+              :class="`box ${activeId === 'Nav'+ item.id ? 'active':''} ${props.Edit? 'sort':''}`"
+              v-for="item in navs"
+              :key="item.id"
+              @click="setActive('Nav'+ item.id)"
+          >
+            {{ item.title }}
+            <div class="Edit" v-if="props.Edit">
+              <a-dropdown>
+                <a class="ant-dropdown-link" @click.prevent>
+                  <EllipsisOutlined class="EditIcon"/>
+                </a>
+                <template #overlay>
+                  <a-menu>
+                    <a-menu-item @click="openModal(item,'edit')">
+                      <span>编辑</span>
+                    </a-menu-item>
+                    <a-menu-item @click="remove(item)">
+                      <span>删除</span>
+                    </a-menu-item>
+                  </a-menu>
+                </template>
+              </a-dropdown>
+            </div>
+          </div>
+        </TransitionGroup>
+        <transition name="bounce">
+          <div class="box add" v-if="props.Edit" @click="openModal({},'add')">
+            <PlusOutlined/>
+          </div>
+        </transition>
+      </VueDraggable>
     </Simplebar>
     <MenuEdit ref="menuEdit" @resetData="resetData"/>
   </div>
@@ -36,9 +45,11 @@ import {EllipsisOutlined, ExclamationCircleOutlined, PlusOutlined} from '@ant-de
 import 'simplebar-vue/dist/simplebar.min.css';
 import Simplebar from "simplebar-vue";
 import MenuEdit from "@/views/Collection/Alert/MenuEdit.vue";
-import {ref, watch, createVNode} from "vue"
+import {ref, watch, createVNode, computed} from "vue"
 import {message, Modal} from 'ant-design-vue';
-import {deleteInBulk} from '@/Untils/indexedDB.js'
+import {deleteInBulk, updateInBlock} from '@/Untils/indexedDB.js'
+import {VueDraggable} from 'vue-draggable-plus'
+import {clone} from "xe-utils";
 
 const props = defineProps({
   list: {
@@ -54,10 +65,13 @@ const props = defineProps({
     default: 'Nav1'
   }
 })
-watch(() => props.activeId, () => {
-  activeId.value = props.activeId
+const activeId = computed(() => {
+  return props.activeId ?? `Nav${navs.value.at(0).id}`;
 })
-const activeId = ref('Nav1')
+const navs = ref([])
+watch((() => props.list), (value) => {
+  navs.value = value
+})
 
 const emits = defineEmits(['setActive', 'resetData'])
 
@@ -110,14 +124,30 @@ const remove = function (data) {
   }
 }
 
+// 拖拽结束后
+const onEnd = (e) => {
+  const afterSorting = navs.value.reduce((arr, item, index) => {
+    let data = clone(item)
+    delete data.children
+    arr.push({
+      ...data,
+      sort: index
+    })
+    return arr
+  }, [])
+  updateInBlock(afterSorting).then(() => {
+    message.success('修改成功！')
+    resetData()
+  }).catch(() => [
+    message.error('未知错误，修改失败！')
+  ])
+}
 </script>
 
 <style scoped lang="scss">
 $MainHeight: calc(100vh - 140px);
 .simplebar {
   max-height: calc(100vh - 160px);
-
-
 }
 
 .sidebar {
@@ -183,6 +213,16 @@ $MainHeight: calc(100vh - 140px);
     }
   }
 
+  .sort {
+    cursor: move;
+    user-select: none;
+
+    &:active {
+      border: 1px solid #409eff;
+
+    }
+  }
+
   .active {
     padding-left: 20px;
     color: #409eff;
@@ -201,6 +241,11 @@ $MainHeight: calc(100vh - 140px);
       padding-left: 0;
     }
   }
+}
+
+.ghost {
+  opacity: 0.5;
+  margin: 10px 0;
 }
 
 // 组件过渡动画
@@ -225,6 +270,23 @@ $MainHeight: calc(100vh - 140px);
     transform: scale(1);
   }
 }
+
+.fade-move,
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scaleY(0.01) translate(30px, 0);
+}
+
+.fade-leave-active {
+  position: absolute;
+}
+
 </style>
 
 <style lang="scss">

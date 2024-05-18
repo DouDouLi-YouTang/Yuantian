@@ -5,8 +5,8 @@ import webList from './websiteData'
 const db = new Dexie('SystemDb');
 
 db.version(1).stores({
-  SystemNavs: '++id,title,webName,url,synopsis,imgUrl,parentId,createdDate,ClickTimes',
-  UserNavs: '++id,title,webName,url,synopsis,imgUrl,parentId,createdDate,ClickTimes',
+  SystemNavs: '++id,title,webName,url,synopsis,imgUrl,parentId,createdDate,ClickTimes,sort',
+  UserNavs: '++id,title,webName,url,synopsis,imgUrl,parentId,createdDate,ClickTimes,sort',
 })
 const todo = db.table('UserNavs')
 
@@ -14,9 +14,11 @@ function setData() {
   let ALLData = XEUtils.clone(webList)
   let data = [];
   let children = [];
-  ALLData.forEach(item => {
+  ALLData.forEach((item, index) => {
     const newItem = {...item}; // 创建一个新的对象，以避免直接修改原始对象
-    item.children.forEach(child => {
+    newItem.sort = index
+    item.children.forEach((child, childIndex) => {
+      child.sort = childIndex
       children.push(child); // 将子项添加到新数组中
     });
     delete newItem.children; // 删除原始对象的 children 属性
@@ -54,7 +56,7 @@ export function getSystemNavsTableData() {
 
 // 重置表所有数据
 export function resetTableData(tableName) {
-  db[tableName].clear()
+  return db[tableName].clear()
 }
 
 export function setTableData(id, data) {
@@ -63,6 +65,10 @@ export function setTableData(id, data) {
 
 export function removeTableData(id) {
   return todo.delete(id)
+}
+
+export function updateInBlock(data) {
+  return todo.bulkPut(data)
 }
 
 export function deleteInBulk(ids) {

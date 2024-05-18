@@ -4,67 +4,87 @@
       <div :class="`nav ${AnimationId === 'Nav'+item.id ? 'border':''}` " :id="`Nav${item.id}`" v-for="item in data"
            :key="item.id">
         <h1 class="title">{{ item.title }}</h1>
-        <a-row style="width: 100%;padding: 0 10px" :gutter="[20,15]">
-          <a-col class="a-col" v-for="child in item.children">
-            <div>
-              <a-tooltip placement="top">
-                <template #title v-if="child.synopsis">
-                  <span>{{ child.synopsis }}</span>
-                </template>
-                <div class="webBox" @click="Jump(child.id,child)">
-                  <div class="webImg">
-                    <img :src="child.imgUrl" alt="">
-                  </div>
-                  <div class="webName">{{ child.webName }}</div>
-                  <div class="Edit">
-                    <a-dropdown>
-                      <a class="ant-dropdown-link">
-                        <EllipsisOutlined @click.stop class="EditIcon"/>
-                      </a>
-                      <template #overlay>
-                        <a-menu>
-                          <a-menu-item @click="openModal(child,'edit')">
-                            <span>编辑</span>
-                          </a-menu-item>
-                          <a-menu-item @click="remove(child)">
-                            <span>删除</span>
-                          </a-menu-item>
-                        </a-menu>
-                      </template>
-                    </a-dropdown>
-                  </div>
+        <VueDraggable
+            ref="el"
+            v-model="item.children"
+            @end="onEnd(item.id)"
+            target=".ant-row"
+            :animation="150"
+            :filter="'.Add'"
+            :disabled="!props.Edit"
+            ghostClass="ghost"
+        >
+          <a-row style="width: 100%;padding: 0 10px" :gutter="[20,15]">
+            <TransitionGroup
+                type="transition"
+                name="fade"
+            >
+              <a-col class="a-col" v-for="child in item.children" :key="child.id">
+                <div class="sort">
+                  <a-tooltip placement="top" :open="props.Edit ? false:undefined">
+                    <template #title v-if="child.synopsis">
+                      <span>{{ child.synopsis }}</span>
+                    </template>
+                    <div :class="`webBox ${props.Edit? 'sort':''}`" @click="Jump(child.id,child)">
+                      <div class="webImg">
+                        <img :src="child.imgUrl" alt="">
+                      </div>
+                      <div class="webName">{{ child.webName }}</div>
+                      <div class="Edit">
+                        <a-dropdown>
+                          <a class="ant-dropdown-link">
+                            <EllipsisOutlined @click.stop class="EditIcon"/>
+                          </a>
+                          <template #overlay>
+                            <a-menu>
+                              <a-menu-item @click="openModal(child,'edit')">
+                                <span>编辑</span>
+                              </a-menu-item>
+                              <a-menu-item @click="remove(child)">
+                                <span>删除</span>
+                              </a-menu-item>
+                            </a-menu>
+                          </template>
+                        </a-dropdown>
+                      </div>
+                    </div>
+                  </a-tooltip>
                 </div>
-              </a-tooltip>
-            </div>
-          </a-col>
-          <transition name="bounce">
-            <a-col class="a-col" v-if="props.Edit">
-              <div>
-                <a-tooltip placement="top">
-                  <template #title>
-                    <span>点击新增</span>
-                  </template>
-                  <div class="webBox Add" @click="openModal(item.id,'add')">
-                    <PlusOutlined/>
-                  </div>
-                </a-tooltip>
-              </div>
-            </a-col>
-          </transition>
-        </a-row>
+              </a-col>
+            </TransitionGroup>
+            <transition name="bounce">
+              <a-col class="a-col" v-if="props.Edit">
+                <div>
+                  <a-tooltip placement="top">
+                    <template #title>
+                      <span>点击新增</span>
+                    </template>
+                    <div class="webBox Add" @click="openModal(item.id,'add')">
+                      <PlusOutlined/>
+                    </div>
+                  </a-tooltip>
+                </div>
+              </a-col>
+            </transition>
+          </a-row>
+        </VueDraggable>
+
       </div>
+
     </simplebar>
     <WebEdit ref="webData" @resetData="resetData"/>
   </div>
 </template>
 <script setup>
 import {ref, watch, onMounted, createVNode} from "vue"
-import {setTableData, removeTableData} from '@/Untils/indexedDB.js'
+import {setTableData, removeTableData, updateInBlock} from '@/Untils/indexedDB.js'
 import simplebar from "simplebar-vue";
 import {message, Modal} from 'ant-design-vue';
 import {debounce} from "@/Untils/Global";
 import {EllipsisOutlined, PlusOutlined, ExclamationCircleOutlined} from "@ant-design/icons-vue";
 import WebEdit from "@/views/Collection/Alert/WebEdit.vue";
+import {clone} from "xe-utils";
+import {VueDraggable} from "vue-draggable-plus";
 
 const props = defineProps({
   list: {
@@ -77,8 +97,8 @@ const props = defineProps({
   }
 })
 const data = ref([])
-watch(() => [props.list], () => {
-  data.value = props.list
+watch(() => props.list, (value) => {
+  data.value = value
 })
 const emit = defineEmits(['callBackId', 'resetData'])
 const resetData = () => {
@@ -180,6 +200,24 @@ const remove = (child) => {
   });
 }
 
+const onEnd = function (id) {
+  let child = data.value.find(item => item.id === id);
+  const afterSorting = child.children.reduce((arr, item, index) => {
+    let data = clone(item)
+    delete data.children
+    arr.push({
+      ...data,
+      sort: index
+    })
+    return arr
+  }, [])
+  updateInBlock(afterSorting).then(() => {
+    message.success('修改成功！')
+    resetData()
+  }).catch(() => [
+    message.error('未知错误，修改失败！')
+  ])
+}
 </script>
 <style scoped lang="scss">
 $MainHeight: calc(100vh - 60px);
@@ -247,7 +285,7 @@ $MainHeight: calc(100vh - 60px);
       border-radius: 5px;
       transition: all .5s;
       position: relative;
-
+      border: 1px solid transparent;
       @include useTheme {
         background-color: getVar('BaseBackground');
         transition: all getVar('transition');
@@ -260,8 +298,6 @@ $MainHeight: calc(100vh - 60px);
 
         .Edit {
           display: block;
-
-
         }
       }
 
@@ -308,6 +344,19 @@ $MainHeight: calc(100vh - 60px);
       }
     }
 
+    .sort {
+      cursor: move;
+      user-select: none;
+
+      &:hover {
+        transform: translate3d(0, 0, 0)
+      }
+
+      &:active {
+        border-color: #409eff;
+      }
+    }
+
     .Add {
       width: 100%;
       justify-content: center;
@@ -325,6 +374,10 @@ $MainHeight: calc(100vh - 60px);
 .a-col {
   transition: all .5s;
   width: 20%;
+}
+
+.ghost {
+  opacity: 0.5;
 }
 
 // 组件过渡动画
@@ -348,6 +401,22 @@ $MainHeight: calc(100vh - 60px);
   100% {
     transform: scale(1);
   }
+}
+
+.fade-move,
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scaleY(0.01) translate(30px, 0);
+}
+
+.fade-leave-active {
+  position: absolute;
 }
 
 @media screen and (max-width: 992px) {

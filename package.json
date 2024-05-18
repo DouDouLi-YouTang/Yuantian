@@ -12,6 +12,7 @@
     "dexie": "^4.0.4",
     "simplebar-vue": "^2.3.3",
     "vue": "^3.2.13",
+    "vue-draggable-plus": "^0.4.1",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0",
     "xe-utils": "^3.5.25"

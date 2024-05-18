@@ -29,7 +29,7 @@ import {ref} from "vue";
 import {FormOutlined} from '@ant-design/icons-vue';
 import Sidebar from "@/views/Collection/components/Sidebar.vue";
 import Content from "@/views/Collection/components/Content.vue";
-import SlideTheSidebar from "@/components/SlideTheSidebar.vue";
+import SlideTheSidebar from "@/views/SlideTheSidebar/index.vue";
 import {clone} from "xe-utils";
 
 const data = ref([])
@@ -74,9 +74,7 @@ function setActive(id) {
 
 <style scoped lang="scss">
 .collection {
-  @include useTheme {
-    background-color: getVar('PageBackground');
-  }
+  height: 100%;
 }
 
 .a-col {

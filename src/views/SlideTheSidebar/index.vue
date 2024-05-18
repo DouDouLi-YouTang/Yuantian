@@ -5,12 +5,22 @@
     </div>
     <div class="subject">
       <div class="head">
-        <div class="title">
-          首页设置
-        </div>
-        <div class="tip">
-          这里是设置
-        </div>
+        <template v-if="active === 0">
+          <div class="title">
+            首页设置
+          </div>
+          <div class="tip">
+            这里是设置
+          </div>
+        </template>
+        <template v-if="active === 1">
+          <div class="title">
+            备份与恢复
+          </div>
+          <div class="tip">
+            可以在这里备份或恢复您的配置
+          </div>
+        </template>
       </div>
       <div class="body">
         <div class="sidebar">
@@ -36,13 +46,13 @@
             <div class="title">
               将配置以文件形式保存在您的设备上
             </div>
-            <div class="btn">
+            <div class="btn" @click="backup">
               导出
             </div>
             <div class="title">
               还原之前的备份
             </div>
-            <div class="btn">
+            <div class="btn" @click="upload.openModal">
               还原
             </div>
             <div class="title">
@@ -55,6 +65,7 @@
         </div>
       </div>
     </div>
+    <Upload ref="upload"/>
   </div>
 </template>
 
@@ -64,6 +75,9 @@ import {BgColorsOutlined, FileProtectOutlined, ExclamationCircleOutlined} from '
 import {ref, createVNode} from "vue";
 import {message, Modal} from "ant-design-vue";
 import {resetTableData} from '@/Untils/indexedDB'
+import {toDateString} from 'xe-utils'
+import {db} from "@/Untils/indexedDB";
+import Upload from "@/views/SlideTheSidebar/components/Upload.vue";
 
 const active = ref(0)
 const handleActive = (index) => {
@@ -89,6 +103,19 @@ const reSetData = () => {
     },
   })
 }
+const backup = async () => {
+  const UserNavs = await db.table('UserNavs').toArray() || []
+  const jsonString = JSON.stringify(UserNavs)
+  const blob = new Blob([jsonString], {type: 'text/plain'})
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  const day = toDateString(new Date(), 'yyyy年MM月dd日')
+  a.download = day + '备份.txt'
+  a.click();
+  URL.revokeObjectURL(url)
+}
+const upload = ref(null)
 </script>
 <style scoped lang="scss">
 .side {

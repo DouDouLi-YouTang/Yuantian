@@ -79,4 +79,4 @@ export function addTableData(data) {
   return todo.add(data)
 }
 
-export default db
+export {db, todo}

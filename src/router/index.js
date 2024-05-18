@@ -11,7 +11,15 @@ const routes = [
       {
         path: '/Navs',
         name: 'Navs',
-        component: () => import( "../views/Collection/Collection.vue"),
+        component: () => import( "../views/Collection/index.vue"),
+      }, {
+        path: '/Found',
+        name: 'Found',
+        component: () => import( "../views/Found/index.vue")
+      }, {
+        path: '/ChangeLog',
+        name: 'ChangeLog',
+        component: () => import( "../views/ChangeLog/index.vue")
       }
     ]
   },

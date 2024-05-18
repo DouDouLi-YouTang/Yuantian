@@ -38,10 +38,12 @@
                           <template #overlay>
                             <a-menu>
                               <a-menu-item @click="openModal(child,'edit')">
-                                <span>编辑</span>
+                                <EditOutlined/>
+                                <span style="padding-left: 5px">编辑</span>
                               </a-menu-item>
                               <a-menu-item @click="remove(child)">
-                                <span>删除</span>
+                                <DeleteOutlined style="color: red"/>
+                                <span style="padding-left: 5px;color: red">删除</span>
                               </a-menu-item>
                             </a-menu>
                           </template>
@@ -81,7 +83,13 @@ import {setTableData, removeTableData, updateInBlock} from '@/Untils/indexedDB.j
 import simplebar from "simplebar-vue";
 import {message, Modal} from 'ant-design-vue';
 import {debounce} from "@/Untils/Global";
-import {EllipsisOutlined, PlusOutlined, ExclamationCircleOutlined} from "@ant-design/icons-vue";
+import {
+  EllipsisOutlined,
+  PlusOutlined,
+  ExclamationCircleOutlined,
+  EditOutlined,
+  DeleteOutlined
+} from "@ant-design/icons-vue";
 import WebEdit from "@/views/Collection/Alert/WebEdit.vue";
 import {clone} from "xe-utils";
 import {VueDraggable} from "vue-draggable-plus";

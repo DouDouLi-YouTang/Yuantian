@@ -1,8 +1,15 @@
 <template>
   <div class="sidebar" v-show="navs.length">
     <Simplebar class="simplebar">
-      <VueDraggable ref="el" v-model="navs" @end="onEnd" :animation="150" :filter="'.add'" :disabled="!props.Edit"
-                    ghostClass="ghost">
+      <VueDraggable
+          ref="el"
+          v-model="navs"
+          @end="onEnd"
+          :animation="150"
+          :filter="'.add'"
+          :disabled="!props.Edit"
+          ghostClass="ghost"
+      >
         <TransitionGroup type="transition" name="fade">
           <div
               :class="`box ${activeId === 'Nav'+ item.id ? 'active':''} ${props.Edit? 'sort':''}`"
@@ -19,10 +26,12 @@
                 <template #overlay>
                   <a-menu>
                     <a-menu-item @click="openModal(item,'edit')">
-                      <span>编辑</span>
+                      <EditOutlined/>
+                      <span style="padding-left: 5px">编辑</span>
                     </a-menu-item>
                     <a-menu-item @click="remove(item)">
-                      <span>删除</span>
+                      <DeleteOutlined style="color: red"/>
+                      <span style="padding-left: 5px;color: red">删除</span>
                     </a-menu-item>
                   </a-menu>
                 </template>
@@ -41,7 +50,13 @@
   </div>
 </template>
 <script setup>
-import {EllipsisOutlined, ExclamationCircleOutlined, PlusOutlined} from '@ant-design/icons-vue';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+  ExclamationCircleOutlined,
+  PlusOutlined
+} from '@ant-design/icons-vue';
 import 'simplebar-vue/dist/simplebar.min.css';
 import Simplebar from "simplebar-vue";
 import MenuEdit from "@/views/Collection/Alert/MenuEdit.vue";

@@ -207,7 +207,6 @@ defineExpose({
       display: flex;
       width: 200px;
       align-items: center;
-      background-color: white;
       padding: 10px;
       cursor: pointer;
       border-radius: 5px;
@@ -216,6 +215,11 @@ defineExpose({
       margin: 0 auto;
       box-shadow: 0 15px 30px rgba(0, 0, 0, .1);
       transform: translate3d(0, -2px, 0);
+      @include useTheme {
+        background-color: getVar('BaseBackground');
+        transition: all getVar('transition');
+        color: getVar('textColor');
+      }
 
       .webImg {
         width: 20px;
